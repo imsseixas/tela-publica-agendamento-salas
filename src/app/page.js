@@ -78,12 +78,22 @@ export default function Home() {
         </div>
         {/* Título centralizado */}
         <div className="flex-1 flex justify-center">
-          <h1 className="text-xl font-bold text-green-700 md:text-2xl lg:text-3xl text-center">PROGRAMAÇÃO DIÁRIA</h1>
+          <h1
+            className="text-xl font-bold md:text-2xl lg:text-3xl text-center"
+            style={{ color: '#73A94F' }}
+          >
+            PROGRAMAÇÃO DIÁRIA
+          </h1>
         </div>
-        {/* Data à direita */}
-        <div>
-          <p className="text-sm font-medium text-gray-600 md:text-base lg:text-xl">{currentDate}</p>
-        </div>
+            {/* Data à direita */}
+      <div>
+        <p
+          className="text-sm font-medium md:text-base lg:text-xl"
+          style={{ color: '#73A94F' }}
+        >
+          {currentDate}
+        </p>
+      </div>
       </header>
 
       <div className="p-2 md:p-4 flex-grow overflow-auto">
