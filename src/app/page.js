@@ -25,12 +25,13 @@ const useMediaQuery = (query) => {
 
 // DADOS DE EXEMPLO
 const agendamentos = [
-  { sala: 'Sala 101', inicio: '08:00', fim: '09:30', nome: 'Aula de Matemática', cor: 'bg-blue-500', responsavel: 'Prof. João' },
-  { sala: 'Sala 101', inicio: '10:00', fim: '11:00', nome: 'Reunião Interna', cor: 'bg-pink-500', responsavel: 'Coordenação' },
-  { sala: 'Sala 103', inicio: '13:30', fim: '15:00', nome: 'Oficina Maker', cor: 'bg-purple-500', responsavel: 'Prof. Marina' },
-  { sala: 'Sala 202', inicio: '14:30', fim: '16:00', nome: 'Aula de História', cor: 'bg-yellow-500', responsavel: 'Prof. Carlos' },
-  { sala: 'Sala 203', inicio: '09:00', fim: '10:30', nome: 'Aula de Ciências', cor: 'bg-green-500', responsavel: 'Prof. Ana' },
-  { sala: 'Sala 201', inicio: '11:00', fim: '16:30', nome: 'Aula de Geografia', cor: 'bg-red-500', responsavel: 'Prof. Lucas' },
+  { sala: 'Auditório Jorge Filgueira', inicio: '08:00', fim: '16:30', nome: 'Aula de Matemática', cor: 'bg-blue-500', responsavel: 'Prof. João' },
+  { sala: 'Sala de treinamento 01', inicio: '10:00', fim: '11:00', nome: 'Reunião Interna', cor: 'bg-pink-500', responsavel: 'Coordenação' },
+  { sala: 'Sala de treinamento 03', inicio: '13:30', fim: '15:00', nome: 'Oficina Maker', cor: 'bg-purple-500', responsavel: 'Prof. Marina' },
+  { sala: 'Salão Nobre', inicio: '14:30', fim: '16:00', nome: 'Aula de História', cor: 'bg-yellow-500', responsavel: 'Prof. Carlos' },
+  { sala: 'Sala de treinamento 04', inicio: '09:00', fim: '10:30', nome: 'Aula de Ciências', cor: 'bg-green-500', responsavel: 'Prof. Ana' },
+  { sala: 'SENEP', inicio: '11:00', fim: '16:30', nome: 'Aula de Geografia', cor: 'bg-red-500', responsavel: 'Prof. Lucas' },
+  { sala: 'Auditório Jorge Filgueira', inicio: '16:00', fim: '17:30', nome: 'Palestra sobre Sustentabilidade', cor: 'bg-orange-500', responsavel: 'Prof. Fernanda' }
 ];
 
 export default function Home() {
@@ -43,30 +44,56 @@ export default function Home() {
     setCurrentDate(formatDate(new Date()));
   }, []);
 
-  const salas = ['Sala 101', 'Sala 102', 'Sala 103', 'Sala 201', 'Sala 202', 'Sala 203'];
+  // Exemplo: adicione/remova salas aqui sem quebrar
+  const salas = [
+    'Sala de treinamento 01',
+    'Sala de treinamento 02',
+    'Sala de treinamento 03',
+    'Sala de treinamento 04',
+    'SENEP',
+    'Salão Nobre',
+    'Auditório Jorge Filgueira'
+  ];
   const horarios = [];
-
-  for (let h = 5; h <= 23; h++) {
+  for (let h = 7; h <= 23; h++) {
     horarios.push(`${h.toString().padStart(2, '0')}:00`);
     if (interval === 30 && h < 23) {
       horarios.push(`${h.toString().padStart(2, '0')}:30`);
     }
   }
 
+  // QR Code responsivo
+  const qrSize = isSmallResolution ? 80 : 128;
+
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-800 flex flex-col">
-      <header className="flex justify-between items-center px-4 py-2 bg-white border-b border-green-200 shadow-sm flex-shrink-0 md:px-6 md:py-3 lg:px-8 lg:py-4">
-        <h1 className="text-xl font-bold text-green-700 md:text-2xl lg:text-3xl">Agenda de Salas</h1>
-        <p className="text-sm font-medium text-gray-600 md:text-base lg:text-xl">{currentDate}</p>
+    <div className="min-h-screen bg-gray-50 text-gray-800 flex flex-col max-w-full overflow-x-auto">
+      <header className="flex items-center px-4 py-2 bg-white border-b border-green-200 shadow-sm flex-shrink-0 md:px-6 md:py-3 lg:px-8 lg:py-4">
+        {/* Logo à esquerda */}
+        <div className="flex items-center">
+          <img
+            src="/logo-santa-casa.svg"
+            alt="Logo"
+            className="h-16 w-auto mr-4"
+          />
+        </div>
+        {/* Título centralizado */}
+        <div className="flex-1 flex justify-center">
+          <h1 className="text-xl font-bold text-green-700 md:text-2xl lg:text-3xl text-center">PROGRAMAÇÃO DIÁRIA</h1>
+        </div>
+        {/* Data à direita */}
+        <div>
+          <p className="text-sm font-medium text-gray-600 md:text-base lg:text-xl">{currentDate}</p>
+        </div>
       </header>
 
       <div className="p-2 md:p-4 flex-grow overflow-auto">
-        <div className={`min-w-[900px] grid gap-0.5 border border-gray-300 rounded-lg overflow-hidden
-                      grid-cols-[60px_repeat(6,_1fr)]
-                      md:grid-cols-[70px_repeat(6,_1fr)]
-                      lg:grid-cols-[90px_repeat(6,_1fr)]
-                      2xl:grid-cols-[120px_repeat(6,_1fr)]`}>
-
+        <div
+          className="w-full grid gap-0.5 border border-gray-300 rounded-lg overflow-hidden"
+          style={{
+            gridTemplateColumns: `60px repeat(${salas.length}, 1fr)`,
+            maxWidth: '100vw'
+          }}
+        >
           {/* Cabeçalho das salas */}
           <div className="sticky top-0 left-0 bg-gray-100 border-r border-gray-300 px-1 py-1 font-semibold text-center z-20 text-xs md:text-sm lg:text-base">Horário</div>
           {salas.map((sala, index) => (
