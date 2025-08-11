@@ -5,8 +5,11 @@ import { useEffect, useState } from 'react';
 
 
 const formatDate = (date) => {
-  const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-  return date.toLocaleDateString('pt-BR', options);
+  const dia = date.getDate().toString().padStart(2, '0');
+  const mes = date.toLocaleDateString('pt-BR', { month: 'long' });
+  const ano = date.getFullYear();
+  const semana = date.toLocaleDateString('pt-BR', { weekday: 'long' });
+  return `${dia} de ${mes} de ${ano} (${semana})`;
 };
 
 const useMediaQuery = (query) => {
@@ -25,12 +28,12 @@ const useMediaQuery = (query) => {
 
 // DADOS DE EXEMPLO
 const agendamentos = [
-  { sala: 'Auditório Jorge Filgueira', inicio: '08:00', fim: '16:30', nome: 'Aula de Matemática', cor: 'bg-blue-500', responsavel: 'Prof. João' },
+  { sala: 'Auditório Jorge Filgueira', inicio: '08:00', fim: '16:30', nome: 'Saúde Mental', cor: 'bg-blue-500', responsavel: 'Prof. João' },
   { sala: 'Sala de treinamento 01', inicio: '10:00', fim: '11:00', nome: 'Reunião Interna', cor: 'bg-pink-500', responsavel: 'Coordenação' },
   { sala: 'Sala de treinamento 03', inicio: '13:30', fim: '15:00', nome: 'Oficina Maker', cor: 'bg-purple-500', responsavel: 'Prof. Marina' },
-  { sala: 'Salão Nobre', inicio: '14:30', fim: '16:00', nome: 'Aula de História', cor: 'bg-yellow-500', responsavel: 'Prof. Carlos' },
-  { sala: 'Sala de treinamento 04', inicio: '09:00', fim: '10:30', nome: 'Aula de Ciências', cor: 'bg-green-500', responsavel: 'Prof. Ana' },
-  { sala: 'SENEP', inicio: '11:00', fim: '16:30', nome: 'Aula de Geografia', cor: 'bg-red-500', responsavel: 'Prof. Lucas' },
+  { sala: 'Salão Nobre', inicio: '14:30', fim: '16:00', nome: 'Workshop de Programação', cor: 'bg-yellow-500', responsavel: 'Prof. Carlos' },
+  { sala: 'Sala de treinamento 04', inicio: '09:00', fim: '10:30', nome: 'Seminário X', cor: 'bg-green-500', responsavel: 'Prof. Ana' },
+  { sala: 'SENEP', inicio: '11:00', fim: '16:30', nome: 'Palestra Y', cor: 'bg-red-500', responsavel: 'Prof. Lucas' },
   { sala: 'Auditório Jorge Filgueira', inicio: '16:00', fim: '17:30', nome: 'Palestra sobre Sustentabilidade', cor: 'bg-orange-500', responsavel: 'Prof. Fernanda' }
 ];
 
@@ -88,7 +91,7 @@ export default function Home() {
             {/* Data à direita */}
       <div>
         <p
-          className="text-sm font-medium md:text-base lg:text-xl"
+          className="text-2xl font-medium md:text-3xl lg:text-2xl"
           style={{ color: '#73A94F' }}
         >
           {currentDate}
