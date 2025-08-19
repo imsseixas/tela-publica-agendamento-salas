@@ -28,24 +28,24 @@ const useMediaQuery = (query) => {
 
 // DADOS DE EXEMPLO
 const agendamentos = [
-  { sala: 'Sala de treinamento 01', inicio: '07:30', fim: '08:30', nome: 'SERVIÇO DE DERMATOLOGIA [In-person]', cor: 'bg-blue-400', responsavel: '' },
-  { sala: 'Sala de treinamento 01', inicio: '10:00', fim: '12:00', nome: 'DISCUSSÃO DE CASOS', cor: 'bg-blue-400', responsavel: '' },
-  { sala: 'Sala de treinamento 01', inicio: '13:00', fim: '15:00', nome: 'PROGRAMA DE RESIÊNCIA MULTIPROFISSIONAL EM SAÚDE DA UNEM', cor: 'bg-blue-400', responsavel: 'Sra. Ângela Cristina F. Goes'},
-  { sala: 'Sala de treinamento 01', inicio: '15:00', fim: '16:30', nome: 'Treinamento : Elaboração de agenda [In-person]', cor: 'bg-blue-400', responsavel: 'Alane Fidelis de Andrade' },
+  { sala: 'Sala de treinamento 01', inicio: '07:00', fim: '08:30', nome: 'SERVIÇO DE CIRURGIA GERAL [In-person]', cor: 'bg-blue-400', responsavel: '' },
+  { sala: 'Sala de treinamento 01', inicio: '08:30', fim: '10:00', nome: 'TREINAMENTO EM ESPIROMETRIA [In-person]', cor: 'bg-blue-400', responsavel: '' },
+  { sala: 'Sala de treinamento 01', inicio: '10:00', fim: '12:00', nome: 'DISCUSSÃO DE CASOS [In-person]', cor: 'bg-blue-400', responsavel: ''},
+  { sala: 'Sala de treinamento 01', inicio: '13:30', fim: '15:00', nome: 'SESSÃO DE ARRITMO', cor: 'bg-blue-400', responsavel: '' },
+  { sala: 'Sala de treinamento 01', inicio: '15:00', fim: '17:00', nome: 'Anna Karine Cruz Souza', cor: 'bg-blue-400', responsavel: 'Anna Karine Cruz Souza' },
   { sala: 'Sala de treinamento 01', inicio: '18:00', fim: '22:00', nome: 'AULA FACULDADE SANTA CASA', cor: 'bg-blue-400', responsavel: '' },
-  { sala: 'Sala de treinamento 02', inicio: '08:00', fim: '11:00', nome: 'Camila Ferreira Houat', cor: 'bg-pink-400', responsavel: 'Camila Ferreira Houat' },
-  { sala: 'Sala de treinamento 02', inicio: '14:30', fim: '16:30', nome: 'Treinamento Lactário e SENEP', cor: 'bg-pink-400', responsavel: 'Brenna Loreny da Rocha Carvalho' },
+  { sala: 'Sala de treinamento 02', inicio: '06:30', fim: '08:30', nome: 'Entrevista colaborador/ Wildson Meireles', cor: 'bg-pink-400', responsavel: '' },
+  { sala: 'Sala de treinamento 02', inicio: '08:30', fim: '10:30', nome: 'Entrevista colaborador/ Wildson Meireles', cor: 'bg-pink-400', responsavel: '' },
   { sala: 'Sala de treinamento 02', inicio: '18:00', fim: '22:00', nome: 'AULA FACULDADE SANTA CASA', cor: 'bg-pink-400', responsavel: '' },
   { sala: 'Sala de treinamento 03', inicio: '06:30', fim: '09:00', nome: 'SERVIÇO DE ORTOPEDIA [In-person]', cor: 'bg-green-400', responsavel: '' },
   { sala: 'Sala de treinamento 03', inicio: '09:00', fim: '11:00', nome: 'SESSÃO DE CLINCA MÉDICA_INTERNOS', cor: 'bg-green-400', responsavel: 'Dr. Mateus' },
   { sala: 'Sala de treinamento 03', inicio: '14:00', fim: '16:00', nome: 'SESSÃO MEDICINA INTENSIVA/AULA CLINICA RESIDÊNCIA', cor: 'bg-green-400', responsavel: 'Dr. Reinaldo' },
   { sala: 'Sala de treinamento 03', inicio: '18:00', fim: '22:00', nome: 'AULA FACULDADE SANTA CASA', cor: 'bg-green-400', responsavel: '' },
   { sala: 'Sala de treinamento 04', inicio: '06:30', fim: '07:30', nome: 'SERVIÇO DE ANESTESTESIOLOGIA', cor: 'bg-gray-400', responsavel: '' },
-  { sala: 'Sala de treinamento 04', inicio: '08:00', fim: '11:00', nome: 'Camila Ferreira Houat', cor: 'bg-gray-400', responsavel: 'Camila Ferreira Houat' },
+  { sala: 'Sala de treinamento 04', inicio: '09:00', fim: '11:00', nome: 'Apresentação Faturamento', cor: 'bg-gray-400', responsavel: 'Barbara Rosentina' },
   { sala: 'Sala de treinamento 04', inicio: '14:00', fim: '17:00', nome: 'Camila Ferreira Houat', cor: 'bg-gray-400', responsavel: 'Camila Ferreira Houat' },
   { sala: 'Sala de treinamento 04', inicio: '18:00', fim: '22:00', nome: 'AULA FACULDADE SANTA CASA', cor: 'bg-gray-400', responsavel: '' },
   { sala: 'SENEP', inicio: '07:00', fim: '10:00', nome: 'SERVIÇO DE CIRURGIA GERAL [In-person]', cor: 'bg-cyan-400', responsavel: '' },
-  { sala: 'SENEP', inicio: '10:00', fim: '11:00', nome: 'Discussão de Casos Clínicos', cor: 'bg-cyan-400', responsavel: 'Gilson Filho' },
   { sala: 'SENEP', inicio: '14:00', fim: '17:00', nome: 'Luciana Magnavita Rocha', cor: 'bg-cyan-400', responsavel: 'Luciana Magnavita Rocha' },
 ];
 
@@ -66,7 +66,6 @@ export default function Home() {
     'Sala de treinamento 03',
     'Sala de treinamento 04',
     'SENEP',
-    'Salão Nobre',
     'Auditório Jorge Filgueira'
   ];
   const horarios = [];
