@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'; // 👈 IMPORTANTE!
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
 
 const formatDate = (date) => {
@@ -52,9 +52,45 @@ const agendamentos = [
 export default function Home() {
   const [currentDate, setCurrentDate] = useState('');
   const [now, setNow] = useState(new Date());
+  const [agoraTop, setAgoraTop] = useState(null);
+  const gridRef = useRef(null);
   const isSmallResolution = useMediaQuery('(max-width: 1379px)');
   const interval = isSmallResolution ? 60 : 30;
   const slotHeight = 24;
+
+  // calcula posição exata da linha "Agora" medindo o DOM (considera gaps/borders)
+  useEffect(() => {
+    if (!gridRef.current) {
+      setAgoraTop(null);
+      return;
+    }
+    const minutosDesdeInicio = (now.getHours() * 60 + now.getMinutes()) - 360;
+    if (minutosDesdeInicio < 0 || minutosDesdeInicio > (17 * 60)) {
+      setAgoraTop(null);
+      return;
+    }
+
+    // índice do slot atual (0 = 06:00)
+    const slotIndex = Math.floor(minutosDesdeInicio / interval);
+    // o array 'horarios' existe abaixo na render; construímos aqui uma pequena versão
+    const horariosTmp = [];
+    for (let h = 6; h <= 23; h++) {
+      horariosTmp.push(`${h.toString().padStart(2, '0')}:00`);
+      if (interval === 30 && h < 23) horariosTmp.push(`${h.toString().padStart(2, '0')}:30`);
+    }
+
+    const slotTime = horariosTmp[slotIndex];
+    const slotEl = gridRef.current.querySelector(`[data-time="${slotTime}"]`);
+    if (!slotEl) {
+      setAgoraTop(null);
+      return;
+    }
+    const gridRect = gridRef.current.getBoundingClientRect();
+    const slotRect = slotEl.getBoundingClientRect();
+    const offsetInsideSlot = (minutosDesdeInicio % interval) / interval * slotHeight;
+    const top = slotRect.top - gridRect.top + offsetInsideSlot;
+    setAgoraTop(top);
+  }, [now, interval, slotHeight]);
 
   useEffect(() => {
     setCurrentDate(formatDate(new Date()));
@@ -116,119 +152,127 @@ export default function Home() {
 
       <div className="p-2 md:p-4 flex-grow overflow-auto">
         <div
-          className="w-full grid gap-0.5 border border-gray-300 rounded overflow-hidden" // ⬅️ rounded-lg → rounded
+          className="w-full"
           style={{
-            gridTemplateColumns: `60px repeat(${salas.length}, 1fr)`,
-            maxWidth: '100vw'
+            maxWidth: '100vw',
           }}
         >
           {/* Cabeçalho das salas */}
-          <div className="sticky top-0 left-0 bg-gray-100 border-r border-gray-300 px-1 py-1 font-semibold text-center z-20 text-xs md:text-sm lg:text-base">Horário</div>
-          {salas.map((sala, index) => (
-            <div key={index} className="sticky top-0 bg-green-100 px-1 py-1 font-semibold text-center text-[10px] border-l border-gray-300 z-10 md:text-xs lg:text-sm">
-              {sala}
+          <div
+            className="grid gap-0.5 border border-gray-300 rounded overflow-hidden"
+            style={{
+              gridTemplateColumns: `60px repeat(${salas.length}, 1fr)`,
+              position: 'relative',
+            }}
+          >
+            <div className="sticky top-0 left-0 bg-gray-100 border-r border-gray-300 px-1 py-1 font-semibold text-center z-20 text-xs md:text-sm lg:text-base">
+              Horário
             </div>
-          ))}
-
-          {/* Grade de horários */}
-          <div style={{ gridColumn: `1 / span ${salas.length + 1}`, position: 'relative', height: 0 }}>
-            {/* Linha do horário atual */}
-            {(() => {
-              // Calcula minutos desde 06:00
-              const minutosDesdeInicio = (now.getHours() * 60 + now.getMinutes()) - 360;
-              const totalSlots = interval === 30 ? 34 : 18; // 6:00 até 23:00, slots de 30 ou 60 min
-              const totalAltura = totalSlots * slotHeight;
-              if (minutosDesdeInicio >= 0 && minutosDesdeInicio <= (17 * 60)) {
-                const top = (minutosDesdeInicio / interval) * slotHeight;
-                return (
-                  <div
-                    style={{
-                      position: 'absolute',
-                      top: `${top}px`,
-                      left: 0,
-                      width: '100%',
-                      height: '2px',
-                      background: 'green',
-                      zIndex: 50,
-                    }}
-                  >
-                    <span
-                      style={{
-                        position: 'absolute',
-                        left: 0,
-                        top: '-14px',
-                        background: 'green',
-                        color: 'white',
-                        fontSize: '10px',
-                        padding: '0 4px',
-                        borderRadius: '2px',
-                      }}
-                    >
-                      Agora: {now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
-                    </span>
-                  </div>
-                );
-              }
-              return null;
-            })()}
-          </div>
-          {horarios.map((horario, index) => (
-            <React.Fragment key={`linha-${index}`}>
-              {/* Coluna de horário */}
-              <div 
-                className={`sticky left-0 bg-gray-100 px-1 py-0.5 text-[8px] md:text-xs text-right pr-1 border-r border-gray-300 flex items-center justify-end ${index % 2 === 0 ? 'bg-gray-100' : 'bg-white'}`}
-                style={{ height: `${slotHeight}px` }}
+            {salas.map((sala, index) => (
+              <div
+                key={index}
+                className="sticky top-0 bg-green-100 px-1 py-1 font-semibold text-center text-[10px] border-l border-gray-300 z-10 md:text-xs lg:text-sm"
               >
-                {horario}
+                {sala}
               </div>
+            ))}
+          </div>
+          {/* Grade de horários + linha do agora */}
+          <div
+            className="grid gap-0.5 border-x border-b border-gray-300 rounded-b overflow-hidden"
+            ref={gridRef}
+            style={{
+              gridTemplateColumns: `60px repeat(${salas.length}, 1fr)`,
+              position: 'relative',
+              height: `${horarios.length * slotHeight}px`,
+            }}
+          >
+            {/* Linha do horário atual - AGORA POSICIONADA CORRETAMENTE */}
+            {agoraTop !== null && (
+              <div
+                style={{
+                  position: 'absolute',
+                  top: `${agoraTop}px`,
+                  left: 0,
+                  width: '100%',
+                  height: '2px',
+                  background: 'green',
+                  zIndex: 50,
+                }}
+              >
+                <span
+                  style={{
+                    position: 'absolute',
+                    left: 0,
+                    top: '-14px',
+                    background: 'green',
+                    color: 'white',
+                    fontSize: '10px',
+                    padding: '0 4px',
+                    borderRadius: '2px',
+                  }}
+                >
+                  Agora: {now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+                </span>
+              </div>
+            )}
 
-              {/* Colunas por sala */}
-              {salas.map((sala, salaIndex) => {
-                // Calcula o início e fim do slot atual
-                const [slotH, slotM] = horario.split(':').map(Number);
-                const slotStart = slotH * 60 + slotM;
-                const slotEnd = slotStart + interval;
+            {horarios.map((horario, index) => (
+              <React.Fragment key={`linha-${index}`}>
+                {/* Coluna de horário */}
+                <div
+                  className={`sticky left-0 bg-gray-100 px-1 py-0.5 text-[8px] md:text-xs text-right pr-1 border-r border-gray-300 flex items-center justify-end ${index % 2 === 0 ? 'bg-gray-100' : 'bg-white'}`}
+                  data-time={horario}
+                   style={{ height: `${slotHeight}px` }}
+                >
+                  {horario}
+                </div>
 
-                // Busca agendamentos que começam dentro do slot
-                const blocos = agendamentos.filter(ag => {
-                  if (ag.sala !== sala) return false;
-                  const [agH, agM] = ag.inicio.split(':').map(Number);
-                  const agStart = agH * 60 + agM;
-                  return agStart >= slotStart && agStart < slotEnd;
-                });
+                {/* Colunas por sala */}
+                {salas.map((sala, salaIndex) => {
+                  const [slotH, slotM] = horario.split(':').map(Number);
+                  const slotStart = slotH * 60 + slotM;
+                  const slotEnd = slotStart + interval;
+                  const blocos = agendamentos.filter(ag => {
+                    if (ag.sala !== sala) return false;
+                    const [agH, agM] = ag.inicio.split(':').map(Number);
+                    const agStart = agH * 60 + agM;
+                    return agStart >= slotStart && agStart < slotEnd;
+                  });
 
-                return (
-                  <div 
-                    key={`${index}-${salaIndex}`}
-                    className={`relative border-t border-l border-gray-200 p-0.5 ${index % 2 === 0 ? 'bg-gray-50' : 'bg-white'} rounded`} // ⬅️ rounded-md → rounded
-                    style={{ height: `${slotHeight}px` }}
-                  >
-                    {blocos.map((ag, idx) => {
-                      const [startH, startM] = ag.inicio.split(':').map(Number);
-                      const [endH, endM] = ag.fim.split(':').map(Number);
-                      const duracaoMin = (endH * 60 + endM) - (startH * 60 + startM);
-                      const altura = (duracaoMin / interval) * slotHeight;
+                  return (
+                    <div
+                      key={`${index}-${salaIndex}`}
+                      className={`relative border-t border-l border-gray-200 p-0.5 ${index % 2 === 0 ? 'bg-gray-50' : 'bg-white'} rounded`}
+                      style={{ height: `${slotHeight}px` }}
+                    >
+                      {blocos.map((ag, idx) => {
+                        const [startH, startM] = ag.inicio.split(':').map(Number);
+                        const [endH, endM] = ag.fim.split(':').map(Number);
+                        const duracaoMin = (endH * 60 + endM) - (startH * 60 + startM);
+                        const altura = (duracaoMin / interval) * slotHeight;
 
-                      return (
-                        <div
-                          key={idx}
-                          className={`absolute left-0 w-full text-white px-1 py-1 shadow ${ag.cor} flex flex-col justify-between rounded`} // ⬅️ rounded-md → rounded
-                          style={{
-                            top: 0,
-                            height: `${altura}px`,
-                            zIndex: 10,
-                          }}
-                        >
-                          <div className="text-sm font-semibold truncate leading-tight">{ag.nome}</div>
-                          <div className="text-xs text-white/90 italic text-right">{ag.responsavel || 'Instrutor não informado'}</div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                );
-              })}
-            </React.Fragment>
-          ))}
+                        return (
+                          <div
+                            key={idx}
+                            className={`absolute left-0 w-full text-white px-1 py-1 shadow ${ag.cor} flex flex-col justify-between rounded`}
+                            style={{
+                              top: 0,
+                              height: `${altura}px`,
+                              zIndex: 10,
+                            }}
+                          >
+                            <div className="text-sm font-semibold truncate leading-tight">{ag.nome}</div>
+                            <div className="text-xx text-white/90 italic text-right">{ag.responsavel || 'Instrutor não informado'}</div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  );
+                })}
+              </React.Fragment>
+            ))}
+          </div>
         </div>
       </div>
     </div>
