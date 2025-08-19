@@ -115,7 +115,6 @@ export default function Home() {
       horarios.push(`${h.toString().padStart(2, '0')}:30`);
     }
   }
-
   // QR Code responsivo
   const qrSize = isSmallResolution ? 80 : 128;
 
@@ -159,7 +158,7 @@ export default function Home() {
         >
           {/* Cabeçalho das salas */}
           <div
-            className="grid gap-0.5 border border-gray-300 rounded overflow-hidden"
+            className="grid gap-0.5 border border-gray-300 rounded overflow-visible"
             style={{
               gridTemplateColumns: `60px repeat(${salas.length}, 1fr)`,
               position: 'relative',
@@ -179,7 +178,7 @@ export default function Home() {
           </div>
           {/* Grade de horários + linha do agora */}
           <div
-            className="grid gap-0.5 border-x border-b border-gray-300 rounded-b overflow-hidden"
+            className="grid gap-0.5 border-x border-b border-gray-300 rounded-b overflow-visible"
             ref={gridRef}
             style={{
               gridTemplateColumns: `60px repeat(${salas.length}, 1fr)`,
@@ -250,7 +249,11 @@ export default function Home() {
                         const [startH, startM] = ag.inicio.split(':').map(Number);
                         const [endH, endM] = ag.fim.split(':').map(Number);
                         const duracaoMin = (endH * 60 + endM) - (startH * 60 + startM);
-                        const altura = (duracaoMin / interval) * slotHeight;
+
+                        // Ajuste: calcula quantos "slots" o agendamento ocupa e compensa as bordas/gaps entre eles
+                        const slotsSpanned = duracaoMin / interval;
+                        const internalBorders = Math.max(0, Math.floor(slotsSpanned) - 1); // 1px por borda interna
+                        const altura = Math.round(slotsSpanned * slotHeight + internalBorders * 1);
 
                         return (
                           <div
