@@ -51,12 +51,16 @@ const agendamentos = [
 
 export default function Home() {
   const [currentDate, setCurrentDate] = useState('');
+  const [now, setNow] = useState(new Date());
   const isSmallResolution = useMediaQuery('(max-width: 1379px)');
   const interval = isSmallResolution ? 60 : 30;
   const slotHeight = 24;
 
   useEffect(() => {
     setCurrentDate(formatDate(new Date()));
+    // Atualiza o horário atual a cada minuto
+    const timer = setInterval(() => setNow(new Date()), 60 * 1000);
+    return () => clearInterval(timer);
   }, []);
 
   // Exemplo: adicione/remova salas aqui sem quebrar
@@ -112,7 +116,7 @@ export default function Home() {
 
       <div className="p-2 md:p-4 flex-grow overflow-auto">
         <div
-          className="w-full grid gap-0.5 border border-gray-300 rounded-lg overflow-hidden"
+          className="w-full grid gap-0.5 border border-gray-300 rounded overflow-hidden" // ⬅️ rounded-lg → rounded
           style={{
             gridTemplateColumns: `60px repeat(${salas.length}, 1fr)`,
             maxWidth: '100vw'
@@ -127,6 +131,47 @@ export default function Home() {
           ))}
 
           {/* Grade de horários */}
+          <div style={{ gridColumn: `1 / span ${salas.length + 1}`, position: 'relative', height: 0 }}>
+            {/* Linha do horário atual */}
+            {(() => {
+              // Calcula minutos desde 06:00
+              const minutosDesdeInicio = (now.getHours() * 60 + now.getMinutes()) - 360;
+              const totalSlots = interval === 30 ? 34 : 18; // 6:00 até 23:00, slots de 30 ou 60 min
+              const totalAltura = totalSlots * slotHeight;
+              if (minutosDesdeInicio >= 0 && minutosDesdeInicio <= (17 * 60)) {
+                const top = (minutosDesdeInicio / interval) * slotHeight;
+                return (
+                  <div
+                    style={{
+                      position: 'absolute',
+                      top: `${top}px`,
+                      left: 0,
+                      width: '100%',
+                      height: '2px',
+                      background: 'green',
+                      zIndex: 50,
+                    }}
+                  >
+                    <span
+                      style={{
+                        position: 'absolute',
+                        left: 0,
+                        top: '-14px',
+                        background: 'green',
+                        color: 'white',
+                        fontSize: '10px',
+                        padding: '0 4px',
+                        borderRadius: '2px',
+                      }}
+                    >
+                      Agora: {now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+                    </span>
+                  </div>
+                );
+              }
+              return null;
+            })()}
+          </div>
           {horarios.map((horario, index) => (
             <React.Fragment key={`linha-${index}`}>
               {/* Coluna de horário */}
@@ -155,7 +200,7 @@ export default function Home() {
                 return (
                   <div 
                     key={`${index}-${salaIndex}`}
-                    className={`relative border-t border-l border-gray-200 p-0.5 ${index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}`}
+                    className={`relative border-t border-l border-gray-200 p-0.5 ${index % 2 === 0 ? 'bg-gray-50' : 'bg-white'} rounded`} // ⬅️ rounded-md → rounded
                     style={{ height: `${slotHeight}px` }}
                   >
                     {blocos.map((ag, idx) => {
@@ -167,7 +212,7 @@ export default function Home() {
                       return (
                         <div
                           key={idx}
-                          className={`absolute left-0 w-full rounded-md text-white px-1 py-1 shadow ${ag.cor} flex flex-col justify-between`}
+                          className={`absolute left-0 w-full text-white px-1 py-1 shadow ${ag.cor} flex flex-col justify-between rounded`} // ⬅️ rounded-md → rounded
                           style={{
                             top: 0,
                             height: `${altura}px`,
